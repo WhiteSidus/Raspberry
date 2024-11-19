@@ -2,21 +2,24 @@ import machine
 import dht
 import time
 
-# Inicializace senzoru a pinů pro LED a buzzer
-sensor = dht.DHT11(machine.Pin(0))           # DHT11 senzor na GPIO 0
-buzzer = machine.Pin(1, machine.Pin.OUT)      # Buzzer na GPIO 1
-led1 = machine.Pin(2, machine.Pin.OUT)        # LED1 na GPIO 2
-led2 = machine.Pin(3, machine.Pin.OUT)        # LED2 na GPIO 3
-led3 = machine.Pin(4, machine.Pin.OUT)        # LED3 na GPIO 4
-led4 = machine.Pin(5, machine.Pin.OUT)        # LED4 na GPIO 5
+sensor = dht.DHT11(machine.Pin(0))           
+buzzer = machine.Pin(1, machine.Pin.OUT)      
+led1 = machine.Pin(2, machine.Pin.OUT)        
+led2 = machine.Pin(3, machine.Pin.OUT)        
+led3 = machine.Pin(4, machine.Pin.OUT)        
+led4 = machine.Pin(5, machine.Pin.OUT)
+
+button = machine.Pin(14, machine.Pin.IN, machine.Pin.PULL_UP)
 
 while True:
-    sensor.measure()  # Spustí měření
+    sensor.measure()  
     temperature = sensor.temperature()
-    print("Temperature:", temperature, "°C")
-    print("Humidity:", sensor.humidity(), "%")
-    
-    # Rozsvícení LED podle teplotního rozsahu
+
+    if button.value() == 0:
+        print("Temperature:", temperature, "oC")
+    else:
+        print("Humidity:", sensor.humidity(), "%")
+
     if temperature < 20:
         led1.on()
         led2.off()
@@ -32,16 +35,14 @@ while True:
         led2.off()
         led3.on()
         led4.off()
-    else:  # temperature >= 30
+    else:  
         led1.off()
         led2.off()
         led3.off()
         led4.on()
     
-    # Zvuková indikace, že měření proběhlo
     buzzer.on()
-    time.sleep(0.1)
+    time.sleep(0.01)
     buzzer.off()
 
-    # Pauza mezi měřeními
-    time.sleep(5)
+    time.sleep(15)
